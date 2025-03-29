@@ -12,6 +12,7 @@ export default function App() {
   const [splitAmong, setSplitAmong] = useState([]);
   const [showAddItemForm, setShowAddItemForm] = useState(false);
   const [showSettlement, setShowSettlement] = useState(true);
+  const [splitShares, setSplitShares] = useState({});
 
   const addPerson = () => {
     if (!newPerson.trim() || people.includes(newPerson.trim())) return;
@@ -27,25 +28,31 @@ export default function App() {
     setDescription("");
     setAmount("");
     setPaidBy({});
-    setSplitAmong([]);
+    setSplitShares({});
     setShowAddItemForm(false);
   };
 
   const addExpense = () => {
-    if (!description || !amount || splitAmong.length === 0 || Object.keys(paidBy).length === 0) return;
+    if (!description || !amount || Object.keys(splitShares).length === 0 || Object.keys(paidBy).length === 0) return;
     
     const totalPaid = getTotalPaidAmount();
     if (Math.abs(totalPaid - parseFloat(amount)) > 0.01) {
       alert("The sum of paid amounts must equal the total amount");
       return;
     }
-
+  
+    const totalSplit = Object.values(splitShares).reduce((sum, share) => sum + parseFloat(share), 0);
+    if (Math.abs(totalSplit - parseFloat(amount)) > 0.01) {
+      alert("The sum of split shares must equal the total amount");
+      return;
+    }
+  
     const newExpense = {
       id: Date.now(),
       description,
       amount: parseFloat(amount),
       paidBy: {...paidBy},
-      splitAmong: [...splitAmong]
+      splitShares: {...splitShares}
     };
     setExpenses([...expenses, newExpense]);
     resetItemForm();
@@ -56,12 +63,15 @@ export default function App() {
     people.forEach((person) => (totals[person] = { spent: 0, owes: 0 }));
     
     expenses.forEach((expense) => {
+      // Add what each person paid
       Object.entries(expense.paidBy).forEach(([person, amount]) => {
         totals[person].spent += parseFloat(amount);
       });
       
-      const splitAmount = expense.amount / expense.splitAmong.length;
-      expense.splitAmong.forEach((person) => (totals[person].owes += splitAmount));
+      // Add what each person owes based on their share
+      Object.entries(expense.splitShares).forEach(([person, share]) => {
+        totals[person].owes += parseFloat(share);
+      });
     });
     
     return people.map((person) => ({
@@ -78,6 +88,43 @@ export default function App() {
       newPaidBy[person] = value;
     }
     setPaidBy(newPaidBy);
+  };
+
+  const handleSplitShareChange = (person, value) => {
+    const newSplitShares = { ...splitShares };
+    if (value === "" || isNaN(value)) {
+      delete newSplitShares[person];
+    } else {
+      newSplitShares[person] = parseFloat(value);
+    }
+    setSplitShares(newSplitShares);
+  };
+
+  const handleEvenSplit = () => {
+    if (!amount || isNaN(amount)) {
+      Alert.alert("Invalid Amount", "Please enter a valid total amount first");
+      return;
+    }
+
+    Alert.alert(
+      "Even Split",
+      "This will evenly split the total amount among all members. Continue?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Split",
+          onPress: () => {
+            const totalAmount = parseFloat(amount);
+            const evenShare = (totalAmount / people.length).toFixed(2);
+            const newSplitShares = {};
+            people.forEach(person => {
+              newSplitShares[person] = evenShare;
+            });
+            setSplitShares(newSplitShares);
+          }
+        }
+      ]
+    );
   };
 
   const settlement = calculateSplit();
@@ -223,18 +270,30 @@ export default function App() {
                 />
               </View>
             ))}
-            <Text style={styles.label}>Split among:</Text>
+            <View style={styles.splitHeader}>
+              <Text style={styles.label}>Split shares:</Text>
+              <TouchableOpacity 
+                style={styles.evenSplitButton}
+                onPress={handleEvenSplit}
+              >
+                <Text style={styles.evenSplitText}>Even Split</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.sublabel}>
+              Enter how much each person consumed (total: {
+                Object.values(splitShares).reduce((sum, share) => sum + (parseFloat(share) || 0), 0)
+              })
+            </Text>
             {people.map((person) => (
-              <View key={person} style={styles.checkboxOption}>
-                <Checkbox
-                  value={splitAmong.includes(person)}
-                  onValueChange={(checked) => {
-                    if (checked) setSplitAmong([...splitAmong, person]);
-                    else setSplitAmong(splitAmong.filter((p) => p !== person));
-                  }}
-                  color={splitAmong.includes(person) ? "#3b82f6" : undefined}
+              <View key={person} style={styles.paidByContainer}>
+                <Text style={styles.paidByText}>{person}</Text>
+                <TextInput
+                  style={styles.paidByInput}
+                  placeholder="0"
+                  value={splitShares[person] || ""}
+                  onChangeText={(value) => handleSplitShareChange(person, value)}
+                  keyboardType="numeric"
                 />
-                <Text style={styles.checkboxText}>{person}</Text>
               </View>
             ))}
             <Button title="Add Expense" onPress={addExpense} />
@@ -247,10 +306,15 @@ export default function App() {
           ) : (
             expenses.map((exp) => (
               <Text key={exp.id} style={styles.expenseItem}>
-                {exp.description}: {exp.amount} yen, paid by (
+                <Text style={{fontWeight: "bold"}}>{exp.description}</Text>: {exp.amount} yen{"\n"}
+                Paid by: (
                 {Object.entries(exp.paidBy).map(([person, amount], i, arr) => 
                   `${person}: ${amount}${i < arr.length - 1 ? ', ' : ''}`
-                )}), split among {exp.splitAmong.join(", ")}
+                )}){"\n"}
+                Split shares: (
+                {Object.entries(exp.splitShares).map(([person, share], i, arr) => 
+                  `${person}: ${share}${i < arr.length - 1 ? ', ' : ''}`
+                )})
               </Text>
             ))
           )}
@@ -425,5 +489,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '500',
     padding: 12,
+  },
+  splitHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 12,
+    marginBottom: 8,
+  },
+  evenSplitButton: {
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  evenSplitText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
   },
 });
