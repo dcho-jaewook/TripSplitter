@@ -13,6 +13,11 @@ export default function App() {
   const [showAddItemForm, setShowAddItemForm] = useState(false);
   const [showSettlement, setShowSettlement] = useState(true);
   const [splitShares, setSplitShares] = useState({});
+  const [expandedSections, setExpandedSections] = useState({
+    members: true,
+    allExpenses: true,
+    expensesByPerson: true
+  });
 
   const addPerson = () => {
     if (!newPerson.trim() || people.includes(newPerson.trim())) return;
@@ -196,41 +201,77 @@ export default function App() {
     );
   };
 
+  const getPersonExpenses = (personName) => {
+    const paid = expenses.filter(exp => personName in exp.paidBy);
+    const consumed = expenses.filter(exp => personName in exp.splitShares);
+    
+    return {
+      paid: paid.map(exp => ({
+        ...exp,
+        amountPaid: parseFloat(exp.paidBy[personName])
+      })),
+      consumed: consumed.map(exp => ({
+        ...exp,
+        amountConsumed: parseFloat(exp.splitShares[personName])
+      }))
+    };
+  };
+
+  const toggleSection = (sectionName) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionName]: !prev[sectionName]
+    }));
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.innerContainer}>
         <Text style={styles.title}>Trip Splitter</Text>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Add Member</Text>
-          <View style={styles.addPersonContainer}>
-            <TextInput 
-              placeholder="Enter name"
-              value={newPerson}
-              onChangeText={setNewPerson}
-              style={[styles.input, styles.addPersonInput]}
-            />
-            <TouchableOpacity 
-              style={styles.addButton}
-              onPress={addPerson}
-            >
-              <Text style={styles.addButtonText}>Add</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity 
+            style={styles.sectionHeader}
+            onPress={() => toggleSection('members')}
+          >
+            <Text style={styles.sectionTitle}>Members</Text>
+            <Text style={styles.expandButton}>
+              {expandedSections.members ? '▼' : '▶'}
+            </Text>
+          </TouchableOpacity>
           
-          {people.map(person => (
-            <View key={person} style={styles.personItemContainer}>
-              <Text style={styles.personItem}>{person}</Text>
-              <TouchableOpacity 
-                style={[
-                  styles.deleteButton,
-                  !canDeletePerson(person) && styles.deleteButtonDisabled
-                ]}
-                onPress={() => handleDeletePerson(person)}
-              >
-                <Text style={styles.deleteButtonText}>✕</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
+          {expandedSections.members && (
+            <>
+              <View style={styles.addPersonContainer}>
+                <TextInput 
+                  placeholder="Enter name"
+                  value={newPerson}
+                  onChangeText={setNewPerson}
+                  style={[styles.input, styles.addPersonInput]}
+                />
+                <TouchableOpacity 
+                  style={styles.addButton}
+                  onPress={addPerson}
+                >
+                  <Text style={styles.addButtonText}>Add</Text>
+                </TouchableOpacity>
+              </View>
+              
+              {people.map(person => (
+                <View key={person} style={styles.personItemContainer}>
+                  <Text style={styles.personItem}>{person}</Text>
+                  <TouchableOpacity 
+                    style={[
+                      styles.deleteButton,
+                      !canDeletePerson(person) && styles.deleteButtonDisabled
+                    ]}
+                    onPress={() => handleDeletePerson(person)}
+                  >
+                    <Text style={styles.deleteButtonText}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </>
+          )}
         </View>
 
         {!showAddItemForm && (
@@ -304,30 +345,95 @@ export default function App() {
           {expenses.length === 0 ? (
             <Text style={styles.emptyText}>No expenses yet.</Text>
           ) : (
-            expenses.map((exp) => (
-              <Text key={exp.id} style={styles.expenseItem}>
-                <Text style={{fontWeight: "bold"}}>{exp.description}</Text>: {exp.amount} yen{"\n"}
-                Paid by: (
-                {Object.entries(exp.paidBy).map(([person, amount], i, arr) => 
-                  `${person}: ${amount}${i < arr.length - 1 ? ', ' : ''}`
-                )}){"\n"}
-                Split shares: (
-                {Object.entries(exp.splitShares).map(([person, share], i, arr) => 
-                  `${person}: ${share}${i < arr.length - 1 ? ', ' : ''}`
-                )})
-              </Text>
-            ))
+            <>
+              <TouchableOpacity 
+                style={styles.sectionHeader}
+                onPress={() => toggleSection('allExpenses')}
+              >
+                <Text style={styles.expenseSubtitle}>All Expenses</Text>
+                <Text style={styles.expandButton}>
+                  {expandedSections.allExpenses ? '▼' : '▶'}
+                </Text>
+              </TouchableOpacity>
+              
+              {expandedSections.allExpenses && (
+                expenses.map((exp) => (
+                  <Text key={exp.id} style={styles.expenseItem}>
+                    <Text style={{fontWeight: "bold"}}>{exp.description}</Text>: {exp.amount} yen{"\n"}
+                    Paid by: (
+                    {Object.entries(exp.paidBy).map(([person, amount], i, arr) => 
+                      `${person}: ${amount}${i < arr.length - 1 ? ', ' : ''}`
+                    )}){"\n"}
+                    Split shares: (
+                    {Object.entries(exp.splitShares).map(([person, share], i, arr) => 
+                      `${person}: ${share}${i < arr.length - 1 ? ', ' : ''}`
+                    )})
+                  </Text>
+                ))
+              )}
+
+              <TouchableOpacity 
+                style={[styles.sectionHeader, styles.secondaryHeader]}
+                onPress={() => toggleSection('expensesByPerson')}
+              >
+                <Text style={styles.expenseSubtitle}>Expenses by Person</Text>
+                <Text style={styles.expandButton}>
+                  {expandedSections.expensesByPerson ? '▼' : '▶'}
+                </Text>
+              </TouchableOpacity>
+              
+              {expandedSections.expensesByPerson && (
+                people.map(person => {
+                  const personExpenses = getPersonExpenses(person);
+                  return (
+                    <View key={person} style={styles.personExpenseContainer}>
+                      <Text style={styles.personExpenseTitle}>{person}</Text>
+                      
+                      <Text style={styles.expenseSubheader}>Paid for:</Text>
+                      {personExpenses.paid.length === 0 ? (
+                        <Text style={styles.emptyText}>No payments made</Text>
+                      ) : (
+                        personExpenses.paid.map(exp => (
+                          <Text key={exp.id} style={styles.personExpenseItem}>
+                            • {exp.description}: {exp.amountPaid} yen
+                          </Text>
+                        ))
+                      )}
+
+                      <Text style={styles.expenseSubheader}>Consumed in:</Text>
+                      {personExpenses.consumed.length === 0 ? (
+                        <Text style={styles.emptyText}>No items consumed</Text>
+                      ) : (
+                        personExpenses.consumed.map(exp => (
+                          <Text key={exp.id} style={styles.personExpenseItem}>
+                            • {exp.description}: {exp.amountConsumed} yen
+                          </Text>
+                        ))
+                      )}
+                    </View>
+                  );
+                })
+              )}
+            </>
           )}
         </View>
         <Text style={styles.sectionTitle}>Settlement</Text>
         <View style={styles.section}>
           {showSettlement ? (
             <>
-              {settlement.map((person) => (
-                <Text key={person.name} style={styles.settlementItem}>
-                  {person.name}: {person.net >= 0 ? "is owed" : "owes"} {Math.abs(person.net.toFixed(2))} yen
-                </Text>
-              ))}
+              {settlement
+                .filter(person => Math.abs(person.net) > 0.01)
+                .map((person) => (
+                  <Text key={person.name} style={styles.settlementItem}>
+                    <Text style={styles.personName}>{person.name}</Text>: {" "}
+                    <Text style={person.net >= 0 ? styles.positiveAmount : styles.negativeAmount}>
+                      {person.net >= 0 ? "is owed" : "owes"} {Math.abs(person.net.toFixed(2))} yen
+                    </Text>
+                  </Text>
+                ))}
+              {settlement.every(person => Math.abs(person.net) <= 0.01) && (
+                <Text style={styles.emptyText}>All balances are settled!</Text>
+              )}
               {expenses.length > 0 && (
                 <TouchableOpacity 
                   style={styles.settleButton}
@@ -402,7 +508,12 @@ const styles = StyleSheet.create({
   radioText: { fontSize: 16 },
   checkboxOption: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   checkboxText: { marginLeft: 8, fontSize: 16 },
-  sectionTitle: { fontSize: 20, fontWeight: "600", marginBottom: 12, marginTop: 20 },
+  sectionTitle: { 
+    fontSize: 20, 
+    fontWeight: "600",
+    marginBottom: 12,
+    marginTop: 0,
+  },
   emptyText: { color: "#6b7280", fontSize: 16 },
   expenseItem: { fontSize: 16, marginBottom: 8 },
   settlementItem: { fontSize: 16, marginBottom: 8 },
@@ -507,5 +618,61 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
     fontWeight: '500',
+  },
+  expenseSubtitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: 16,
+    marginBottom: 8,
+    color: '#374151',
+  },
+  expenseSubheader: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginTop: 8,
+    marginBottom: 4,
+    color: '#4b5563',
+  },
+  personExpenseContainer: {
+    marginTop: 12,
+    padding: 12,
+    backgroundColor: '#f3f4f6',
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  personExpenseTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+    color: '#1f2937',
+  },
+  personExpenseItem: {
+    fontSize: 14,
+    marginLeft: 8,
+    marginBottom: 4,
+    color: '#374151',
+  },
+  personName: {
+    fontWeight: '600',
+  },
+  positiveAmount: {
+    color: '#059669',
+  },
+  negativeAmount: {
+    color: '#dc2626',
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  expandButton: {
+    fontSize: 18,
+    color: '#4b5563',
+    paddingHorizontal: 8,
+  },
+  secondaryHeader: {
+    marginTop: 16,
   },
 });
