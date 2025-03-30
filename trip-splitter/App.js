@@ -304,7 +304,7 @@ export default function App() {
               
               {people.map(person => (
                 <View key={person} style={styles.personItemContainer}>
-                  <Text style={styles.personItem}>{person}</Text>
+                  <Text style={[styles.personItem, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]}>{person}</Text>
                   <TouchableOpacity 
                     style={[
                       styles.deleteButton,
@@ -341,8 +341,8 @@ export default function App() {
               </TouchableOpacity>
             </View>
 
-            <TextInput placeholder="Description (e.g., Sushi)" value={description} onChangeText={setDescription} style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]} />
-            <TextInput placeholder="Total Amount (e.g., 3000)" value={amount} onChangeText={setAmount} keyboardType="numeric" style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]} />
+            <TextInput placeholder="Description (e.g., Sushi)" placeholderTextColor={theme.textSecondary} value={description} onChangeText={setDescription} style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]} />
+            <TextInput placeholder="Total Amount (e.g., 3000)" placeholderTextColor={theme.textSecondary} value={amount} onChangeText={setAmount} keyboardType="numeric" style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]} />
             <Text style={[styles.label, { color: theme.primary }]}>Paid by:</Text>
             <Text style={[styles.sublabel, { color: theme.textSecondary }]}>Enter amount paid by each person (total: {getTotalPaidAmount()})</Text>
             {people.map((person) => (
@@ -358,6 +358,7 @@ export default function App() {
                     }
                   ]}
                   placeholder="0"
+                  placeholderTextColor={theme.textSecondary}
                   value={paidBy[person] || ""}
                   onChangeText={(value) => handlePaidByChange(person, value)}
                   keyboardType="numeric"
@@ -391,6 +392,7 @@ export default function App() {
                     }
                   ]}
                   placeholder="0"
+                  placeholderTextColor={theme.textSecondary}
                   value={splitShares[person] || ""}
                   onChangeText={(value) => handleSplitShareChange(person, value)}
                   keyboardType="numeric"
@@ -631,11 +633,8 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     padding: 8,
-    backgroundColor: '#2A2A2A',
     borderRadius: 4,
     marginRight: 8,
-    color: '#FFFFFF',
-    borderColor: '#FFDC00',
     borderWidth: 1,
   },
   deleteButton: {
