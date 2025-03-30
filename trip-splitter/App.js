@@ -2,7 +2,29 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import Checkbox from "expo-checkbox";
 
+// Add these theme colors at the top, outside the App component
+const themes = {
+  light: {
+    background: '#FFFFFF',
+    surface: '#F3F4F6',
+    primary: '#1E1E1E',
+    text: '#1E1E1E',
+    textSecondary: '#4B5563',
+    border: '#1E1E1E',
+  },
+  dark: {
+    background: '#1E1E1E',
+    surface: '#2A2A2A',
+    primary: '#FFDC00',
+    text: '#FFFFFF',
+    textSecondary: '#A3A3A3',
+    border: '#FFDC00',
+  }
+};
+
 export default function App() {
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const theme = isDarkMode ? themes.dark : themes.light;
   const [people, setPeople] = useState([]);
   const [newPerson, setNewPerson] = useState("");
   const [expenses, setExpenses] = useState([]);
@@ -224,17 +246,32 @@ export default function App() {
     }));
   };
 
+  // Add toggle function
+  const toggleTheme = () => {
+    setIsDarkMode(prev => !prev);
+  };
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.innerContainer}>
-        <Text style={styles.title}>Trip Splitter</Text>
-        <View style={styles.section}>
+        <View style={styles.headerContainer}>
+          <Text style={[styles.title, { color: theme.primary }]}>Trip Splitter</Text>
+          <TouchableOpacity 
+            style={[styles.themeToggle, { backgroundColor: theme.primary }]}
+            onPress={toggleTheme}
+          >
+            <Text style={[styles.themeToggleText, { color: theme.background }]}>
+              {isDarkMode ? '☀️' : '🌙'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={[styles.section, { backgroundColor: theme.surface }]}>
           <TouchableOpacity 
             style={styles.sectionHeader}
             onPress={() => toggleSection('members')}
           >
-            <Text style={styles.sectionTitle}>Members</Text>
-            <Text style={styles.expandButton}>
+            <Text style={[styles.sectionTitle, { color: theme.primary }]}>Members</Text>
+            <Text style={[styles.expandButton, { color: theme.primary }]}>
               {expandedSections.members ? '▼' : '▶'}
             </Text>
           </TouchableOpacity>
@@ -246,7 +283,16 @@ export default function App() {
                   placeholder="Enter name"
                   value={newPerson}
                   onChangeText={setNewPerson}
-                  style={[styles.input, styles.addPersonInput]}
+                  style={[
+                    styles.input, 
+                    { 
+                      backgroundColor: theme.surface,
+                      borderColor: theme.border,
+                      color: theme.text 
+                    },
+                    styles.addPersonInput
+                  ]}
+                  placeholderTextColor={theme.textSecondary}
                 />
                 <TouchableOpacity 
                   style={styles.addButton}
@@ -279,14 +325,14 @@ export default function App() {
             style={styles.addItemButton}
             onPress={() => setShowAddItemForm(true)}
           >
-            <Text style={styles.addButtonText}>Add Item</Text>
+            <Text style={[styles.addButtonText, { color: theme.primary }]}>Add Item</Text>
           </TouchableOpacity>
         )}
 
         {showAddItemForm && (
-          <View style={styles.section}>
+          <View style={[styles.section, { backgroundColor: theme.surface }]}>
             <View style={styles.formHeader}>
-              <Text style={styles.sectionTitle}>Add Item</Text>
+              <Text style={[styles.sectionTitle, { color: theme.primary }]}>Add Item</Text>
               <TouchableOpacity 
                 style={styles.cancelButton}
                 onPress={resetItemForm}
@@ -295,15 +341,22 @@ export default function App() {
               </TouchableOpacity>
             </View>
 
-            <TextInput placeholder="Description (e.g., Sushi)" value={description} onChangeText={setDescription} style={styles.input} />
-            <TextInput placeholder="Total Amount (e.g., 3000)" value={amount} onChangeText={setAmount} keyboardType="numeric" style={styles.input} />
-            <Text style={styles.label}>Paid by:</Text>
-            <Text style={styles.sublabel}>Enter amount paid by each person (total: {getTotalPaidAmount()})</Text>
+            <TextInput placeholder="Description (e.g., Sushi)" value={description} onChangeText={setDescription} style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]} />
+            <TextInput placeholder="Total Amount (e.g., 3000)" value={amount} onChangeText={setAmount} keyboardType="numeric" style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]} />
+            <Text style={[styles.label, { color: theme.primary }]}>Paid by:</Text>
+            <Text style={[styles.sublabel, { color: theme.textSecondary }]}>Enter amount paid by each person (total: {getTotalPaidAmount()})</Text>
             {people.map((person) => (
               <View key={person} style={styles.paidByContainer}>
-                <Text style={styles.paidByText}>{person}</Text>
+                <Text style={[styles.paidByText, { color: theme.text }]}>{person}</Text>
                 <TextInput
-                  style={styles.paidByInput}
+                  style={[
+                    styles.paidByInput,
+                    { 
+                      backgroundColor: theme.surface,
+                      borderColor: theme.border,
+                      color: theme.text 
+                    }
+                  ]}
                   placeholder="0"
                   value={paidBy[person] || ""}
                   onChangeText={(value) => handlePaidByChange(person, value)}
@@ -312,24 +365,31 @@ export default function App() {
               </View>
             ))}
             <View style={styles.splitHeader}>
-              <Text style={styles.label}>Split shares:</Text>
+              <Text style={[styles.label, { color: theme.primary }]}>Split shares:</Text>
               <TouchableOpacity 
                 style={styles.evenSplitButton}
                 onPress={handleEvenSplit}
               >
-                <Text style={styles.evenSplitText}>Even Split</Text>
+                <Text style={[styles.evenSplitText, styles.addButtonText]}>Even Split</Text>
               </TouchableOpacity>
             </View>
-            <Text style={styles.sublabel}>
+            <Text style={[styles.sublabel, { color: theme.textSecondary }]}>
               Enter how much each person consumed (total: {
                 Object.values(splitShares).reduce((sum, share) => sum + (parseFloat(share) || 0), 0)
               })
             </Text>
             {people.map((person) => (
               <View key={person} style={styles.paidByContainer}>
-                <Text style={styles.paidByText}>{person}</Text>
+                <Text style={[styles.paidByText, { color: theme.text }]}>{person}</Text>
                 <TextInput
-                  style={styles.paidByInput}
+                  style={[
+                    styles.paidByInput,
+                    { 
+                      backgroundColor: theme.surface,
+                      borderColor: theme.border,
+                      color: theme.text 
+                    }
+                  ]}
                   placeholder="0"
                   value={splitShares[person] || ""}
                   onChangeText={(value) => handleSplitShareChange(person, value)}
@@ -337,20 +397,20 @@ export default function App() {
                 />
               </View>
             ))}
-            <Button title="Add Expense" onPress={addExpense} />
+            <Button title="Add Item" onPress={addExpense} />
           </View>
         )}
-        <Text style={styles.sectionTitle}>Expenses</Text>
-        <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.primary }]}>Expenses</Text>
+        <View style={[styles.section, { backgroundColor: theme.surface }]}>
           {expenses.length === 0 ? (
-            <Text style={styles.emptyText}>No expenses yet.</Text>
+            <Text style={[styles.emptyText, { color: theme.textSecondary }]}>No expenses yet.</Text>
           ) : (
             <>
               <TouchableOpacity 
                 style={styles.sectionHeader}
                 onPress={() => toggleSection('allExpenses')}
               >
-                <Text style={styles.expenseSubtitle}>All Expenses</Text>
+                <Text style={[styles.expenseSubtitle, { color: theme.primary }]}>All Expenses</Text>
                 <Text style={styles.expandButton}>
                   {expandedSections.allExpenses ? '▼' : '▶'}
                 </Text>
@@ -358,16 +418,16 @@ export default function App() {
               
               {expandedSections.allExpenses && (
                 expenses.map((exp) => (
-                  <Text key={exp.id} style={styles.expenseItem}>
-                    <Text style={{fontWeight: "bold"}}>{exp.description}</Text>: {exp.amount} yen{"\n"}
-                    Paid by: (
+                  <Text key={exp.id} style={[styles.expenseItem, { color: theme.text }]}>
+                    <Text style={{fontWeight: "bold", color: theme.text}}>{exp.description}</Text>: {exp.amount} yen{"\n"}
+                    {"\n"}Paid by:{" "}
                     {Object.entries(exp.paidBy).map(([person, amount], i, arr) => 
-                      `${person}: ${amount}${i < arr.length - 1 ? ', ' : ''}`
-                    )}){"\n"}
-                    Split shares: (
+                      `${person} (${amount})${i < arr.length - 1 ? ', ' : ''}`
+                    )}{"\n"}
+                    {"\n"}Split shares:{" "}
                     {Object.entries(exp.splitShares).map(([person, share], i, arr) => 
-                      `${person}: ${share}${i < arr.length - 1 ? ', ' : ''}`
-                    )})
+                      `${person} (${share})${i < arr.length - 1 ? ', ' : ''}`
+                    )}
                   </Text>
                 ))
               )}
@@ -376,7 +436,7 @@ export default function App() {
                 style={[styles.sectionHeader, styles.secondaryHeader]}
                 onPress={() => toggleSection('expensesByPerson')}
               >
-                <Text style={styles.expenseSubtitle}>Expenses by Person</Text>
+                <Text style={[styles.expenseSubtitle, { color: theme.primary }]}>Expenses by Person</Text>
                 <Text style={styles.expandButton}>
                   {expandedSections.expensesByPerson ? '▼' : '▶'}
                 </Text>
@@ -386,26 +446,26 @@ export default function App() {
                 people.map(person => {
                   const personExpenses = getPersonExpenses(person);
                   return (
-                    <View key={person} style={styles.personExpenseContainer}>
-                      <Text style={styles.personExpenseTitle}>{person}</Text>
+                    <View key={person} style={[styles.personExpenseContainer, { backgroundColor: theme.surface }]}>
+                      <Text style={[styles.personExpenseTitle, { color: theme.primary }]}>{person}</Text>
                       
-                      <Text style={styles.expenseSubheader}>Paid for:</Text>
+                      <Text style={[styles.expenseSubheader, { color: theme.textSecondary }]}>Paid for:</Text>
                       {personExpenses.paid.length === 0 ? (
-                        <Text style={styles.emptyText}>No payments made</Text>
+                        <Text style={[styles.emptyText, { color: theme.textSecondary }]}>No payments made</Text>
                       ) : (
                         personExpenses.paid.map(exp => (
-                          <Text key={exp.id} style={styles.personExpenseItem}>
+                          <Text key={exp.id} style={[styles.personExpenseItem, { color: theme.text }]}>
                             • {exp.description}: {exp.amountPaid} yen
                           </Text>
                         ))
                       )}
 
-                      <Text style={styles.expenseSubheader}>Consumed in:</Text>
+                      <Text style={[styles.expenseSubheader, { color: theme.textSecondary }]}>Consumed in:</Text>
                       {personExpenses.consumed.length === 0 ? (
-                        <Text style={styles.emptyText}>No items consumed</Text>
+                        <Text style={[styles.emptyText, { color: theme.textSecondary }]}>No items consumed</Text>
                       ) : (
                         personExpenses.consumed.map(exp => (
-                          <Text key={exp.id} style={styles.personExpenseItem}>
+                          <Text key={exp.id} style={[styles.personExpenseItem, { color: theme.text }]}>
                             • {exp.description}: {exp.amountConsumed} yen
                           </Text>
                         ))
@@ -417,34 +477,34 @@ export default function App() {
             </>
           )}
         </View>
-        <Text style={styles.sectionTitle}>Settlement</Text>
-        <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.primary }]}>Settlement</Text>
+        <View style={[styles.section, { backgroundColor: theme.surface }]}>
           {showSettlement ? (
             <>
               {settlement
                 .filter(person => Math.abs(person.net) > 0.01)
                 .map((person) => (
-                  <Text key={person.name} style={styles.settlementItem}>
-                    <Text style={styles.personName}>{person.name}</Text>: {" "}
+                  <Text key={person.name} style={[styles.settlementItem, { color: theme.text }]}>
+                    <Text style={[styles.personName, { color: theme.text }]}>{person.name}</Text>: {" "}
                     <Text style={person.net >= 0 ? styles.positiveAmount : styles.negativeAmount}>
                       {person.net >= 0 ? "is owed" : "owes"} {Math.abs(person.net.toFixed(2))} yen
                     </Text>
                   </Text>
                 ))}
               {settlement.every(person => Math.abs(person.net) <= 0.01) && (
-                <Text style={styles.emptyText}>All balances are settled!</Text>
+                <Text style={[styles.emptyText, { color: theme.textSecondary }]}>All balances are settled!</Text>
               )}
               {expenses.length > 0 && (
                 <TouchableOpacity 
-                  style={styles.settleButton}
+                  style={[styles.settleButton, { backgroundColor: theme.primary }]}
                   onPress={handleSettle}
                 >
-                  <Text style={styles.settleButtonText}>Settle All Expenses</Text>
+                  <Text style={[styles.settleButtonText, { color: theme.background }]}>Settle All Expenses</Text>
                 </TouchableOpacity>
               )}
             </>
           ) : (
-            <Text style={styles.settledMessage}>All expenses have been settled! 🎉</Text>
+            <Text style={[styles.settledMessage, { color: theme.text }]}>All expenses have been settled! 🎉</Text>
           )}
         </View>
       </View>
@@ -455,22 +515,25 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f3f4f6",
   },
   innerContainer: {
     padding: 20,
     paddingTop: 60,
     paddingBottom: 40,
   },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
+  title: { 
+    fontSize: 24, 
+    fontWeight: "bold", 
+    marginBottom: 20,
+  },
   section: {
     marginBottom: 24,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#2A2A2A',
     padding: 16,
     borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
   },
@@ -481,7 +544,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   addItemButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: theme => theme.primary,
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
@@ -491,16 +554,30 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   cancelButtonText: {
-    color: '#ef4444',
+    color: '#FF3F34',
     fontSize: 16,
     fontWeight: '500',
   },
-  input: { borderWidth: 1, borderColor: "#d1d5db", padding: 12, marginBottom: 12, borderRadius: 8 },
-  label: { fontSize: 16, marginBottom: 8, marginTop: 12 },
+  input: { 
+    borderWidth: 1, 
+    borderColor: "#FFDC00", 
+    padding: 12, 
+    marginBottom: 12, 
+    borderRadius: 8,
+    backgroundColor: '#2A2A2A',
+    color: '#FFFFFF' 
+  },
+  label: { 
+    fontSize: 16, 
+    marginBottom: 8, 
+    marginTop: 12,
+    color: '#FFDC00' 
+  },
   sublabel: {
     fontSize: 14,
-    color: '#6b7280',
+    color: '#FFDC00',
     marginBottom: 8,
+    opacity: 0.8,
   },
   radioOption: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   radioCircle: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: "#374151", marginRight: 8 },
@@ -513,9 +590,18 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 12,
     marginTop: 0,
+    color: '#FFDC00'
   },
-  emptyText: { color: "#6b7280", fontSize: 16 },
-  expenseItem: { fontSize: 16, marginBottom: 8 },
+  emptyText: { 
+    color: "#FFDC00", 
+    fontSize: 16,
+    opacity: 0.7 
+  },
+  expenseItem: { 
+    fontSize: 16, 
+    marginBottom: 8,
+    color: '#FFFFFF' 
+  },
   settlementItem: { fontSize: 16, marginBottom: 8 },
   addPersonContainer: {
     flexDirection: 'row',
@@ -527,13 +613,13 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   addButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#FFDC00',
     padding: 12,
     borderRadius: 8,
     justifyContent: 'center',
   },
   addButtonText: {
-    color: 'white',
+    color: '#1E1E1E',
     fontWeight: 'bold',
   },
   personItemContainer: {
@@ -545,9 +631,12 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     padding: 8,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#2A2A2A',
     borderRadius: 4,
     marginRight: 8,
+    color: '#FFFFFF',
+    borderColor: '#FFDC00',
+    borderWidth: 1,
   },
   deleteButton: {
     backgroundColor: '#ef4444',
@@ -573,24 +662,27 @@ const styles = StyleSheet.create({
   paidByText: {
     flex: 1,
     fontSize: 16,
+    color: '#FFFFFF'
   },
   paidByInput: {
     borderWidth: 1,
-    borderColor: "#d1d5db",
+    borderColor: "#FFDC00",
     padding: 8,
     borderRadius: 8,
     width: 120,
     marginLeft: 8,
+    backgroundColor: '#2A2A2A',
+    color: '#FFFFFF'
   },
   settleButton: {
-    backgroundColor: '#10b981',
+    backgroundColor: '#FFDC00',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 16,
   },
   settleButtonText: {
-    color: 'white',
+    color: '#1E1E1E',
     fontWeight: 'bold',
     fontSize: 16,
   },
@@ -609,13 +701,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   evenSplitButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#FFDC00',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6,
   },
   evenSplitText: {
-    color: 'white',
+    color: '#1E1E1E',
     fontSize: 14,
     fontWeight: '500',
   },
@@ -624,7 +716,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginTop: 16,
     marginBottom: 8,
-    color: '#374151',
+    color: '#FFDC00',
   },
   expenseSubheader: {
     fontSize: 14,
@@ -636,30 +728,33 @@ const styles = StyleSheet.create({
   personExpenseContainer: {
     marginTop: 12,
     padding: 12,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: '#2A2A2A',
     borderRadius: 8,
     marginBottom: 8,
+    borderColor: '#FFDC00',
+    borderWidth: 1,
   },
   personExpenseTitle: {
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 8,
-    color: '#1f2937',
+    color: '#FFDC00',
   },
   personExpenseItem: {
     fontSize: 14,
     marginLeft: 8,
     marginBottom: 4,
-    color: '#374151',
+    color: '#FFFFFF',
   },
   personName: {
     fontWeight: '600',
   },
   positiveAmount: {
-    color: '#059669',
+    color: '#11A31D',
   },
   negativeAmount: {
-    color: '#dc2626',
+    color: '#FF3F34',
+    opacity: 0.7,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -669,10 +764,26 @@ const styles = StyleSheet.create({
   },
   expandButton: {
     fontSize: 18,
-    color: '#4b5563',
+    color: '#FFDC00',
     paddingHorizontal: 8,
   },
   secondaryHeader: {
     marginTop: 16,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  themeToggle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  themeToggleText: {
+    fontSize: 20,
   },
 });
