@@ -511,9 +511,7 @@ export default function App() {
             <Text style={[styles.settledMessage, { color: theme.text }]}>All expenses have been settled! 🎉</Text>
           )}
         </View>
-        {/* <CameraApp></CameraApp> */}
         <CameraApp/>
-        {/* <Testing/> */}
       </View>
     </ScrollView>
   );

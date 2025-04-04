@@ -7,12 +7,10 @@ export default function CameraApp() {
   const [permission, requestPermission] = useCameraPermissions();
 
   if (!permission) {
-    // Camera permissions are still loading.
     return <View />;
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
     return (
       <View style={styles.container}>
         <Text style={styles.message}>We need your permission to show the camera</Text>
@@ -23,18 +21,17 @@ export default function CameraApp() {
 
   function toggleCameraFacing() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
-    // console.log(facing);
   }
 
   return (
     <View style={styles.container}>
-      <Camera style={styles.camera} facing={facing}>
+      <CameraView style={styles.camera} facing={facing}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
             <Text style={styles.text}>Flip Camera</Text>
           </TouchableOpacity>
         </View>
-      </Camera>
+      </CameraView>
     </View>
   );
 }
