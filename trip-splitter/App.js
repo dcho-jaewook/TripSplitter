@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import Checkbox from "expo-checkbox";
+import { testSupabaseConnection } from './testSupabase';
 
 // Add these theme colors at the top, outside the App component
 const themes = {
@@ -40,6 +41,10 @@ export default function App() {
     allExpenses: true,
     expensesByPerson: true
   });
+
+  // useEffect(() => {
+  //   testSupabaseConnection(); // Run the test when the app loads
+  // }, []);
 
   const addPerson = () => {
     if (!newPerson.trim() || people.includes(newPerson.trim())) return;
