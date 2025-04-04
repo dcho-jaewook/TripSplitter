@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import Checkbox from "expo-checkbox";
 import CameraApp from "./components/Camera.js";
-import Testing from "./components/Test.js";
 
 // Add these theme colors at the top, outside the App component
 const themes = {
