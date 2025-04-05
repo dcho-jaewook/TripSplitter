@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import Checkbox from "expo-checkbox";
+import CameraApp from "./components/Camera.js";
 
 // Add these theme colors at the top, outside the App component
 const themes = {
@@ -520,6 +521,7 @@ export default function App() {
             <Text style={[styles.settledMessage, { color: theme.text }]}>All expenses have been settled! 🎉</Text>
           )}
         </View>
+        <CameraApp/>
       </View>
     </ScrollView>
   );
