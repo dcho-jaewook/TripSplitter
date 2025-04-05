@@ -14,11 +14,18 @@
     "expo-status-bar": "~2.0.1",
     "nativewind": "^4.1.23",
     "react": "18.3.1",
-    "react-native": "^0.76.8"
+    "react-native": "^0.76.9"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "tailwindcss": "^3.4.17"
   },
-  "private": true
+  "private": true,
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "listUnkownPackages": false
+      }
+    }
+  }
 }

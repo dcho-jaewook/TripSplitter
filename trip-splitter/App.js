@@ -367,18 +367,29 @@ export default function App() {
             ))}
             <View style={styles.splitHeader}>
               <Text style={[styles.label, { color: theme.primary }]}>Split shares:</Text>
-              <TouchableOpacity 
-                style={styles.evenSplitButton}
-                onPress={handleEvenSplit}
-              >
-                <Text style={[styles.evenSplitText, styles.addButtonText]}>Even Split</Text>
-              </TouchableOpacity>
+              <View style={styles.splitButtonContainer}>
+                <Button title="Reset" onPress={() => setSplitShares({})} />
+                <TouchableOpacity 
+                  style={styles.evenSplitButton}
+                  onPress={handleEvenSplit}
+                >
+                  <Text style={[styles.evenSplitText, styles.addButtonText]}>Even Split</Text>
+                </TouchableOpacity>
+              </View>
             </View>
+
             <Text style={[styles.sublabel, { color: theme.textSecondary }]}>
               Enter how much each person consumed (total: {
                 Object.values(splitShares).reduce((sum, share) => sum + (parseFloat(share) || 0), 0)
               })
             </Text>
+
+            {/* Paid by Section */}
+            <View style={styles.paidByHeader}>
+              <Text style={[styles.label, { color: theme.primary }]}>Paid by:</Text>
+              <Button title="Reset" onPress={() => setPaidBy({})} />
+            </View>
+
             {people.map((person) => (
               <View key={person} style={styles.paidByContainer}>
                 <Text style={[styles.paidByText, { color: theme.text }]}>{person}</Text>
