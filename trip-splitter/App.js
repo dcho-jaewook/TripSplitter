@@ -3,7 +3,6 @@ import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity
 import Checkbox from "expo-checkbox";
 import CameraApp from "./components/Camera.js";
 
-// Add these theme colors at the top, outside the App component
 const themes = {
   light: {
     background: '#FFFFFF',
