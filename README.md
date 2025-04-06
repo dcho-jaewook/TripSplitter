@@ -1,36 +1,46 @@
-# 💰 TripSplitter - 더 쉬운 비용 정산
+# 💰 TripSplitter - Easier Expense Settlement
+> Manage your expenses smartly and conveniently with TripSplitter.  
 
-> 함께한 순간, 편리한 정산. TripSplitter로 지출을 스마트하게 관리하세요.  
+<img src="https://github.com/user-attachments/assets/7764d4e0-98a5-4494-8e51-229d8fa1bf07" width=250>
 
-![banner](https://github.com/user-attachments/assets/359c76d2-8871-442d-86b7-55f0d36da315)
+<img src="https://github.com/user-attachments/assets/ee40a7c0-215f-4968-9bbc-6abd50764842" width=250>
 
-## ✨ 주요 기능
-- 🧾 <strong>자동 정산</strong> - 여러 사람과의 지출을 자동으로 계산
-- 📊 <strong>분석 리포트</strong> - 지출 내역의 깔끔한 분류
-- 🌎 <strong>멀티 통화 지원</strong> - 다양한 통화로 변환 가능
-- 📱 <strong>직관적인 UI</strong> - 누구나 쉽게 사용할 수 있는 심플한 디자인
+<img src="https://github.com/user-attachments/assets/8c40b802-b377-40e3-867d-d664dbcd88bf" width=250>
 
+## ✨ Key Features
+- 🧾 <strong>Automatic Settlement</strong> - Automatically calculate expenses with multiple people
+- 📊 <strong>Analysis Report</strong> - Neat classification of expense details
+- 📱 <strong>Intuitive UI</strong> - Simple design that anyone can use easily
 
-## 📸 스크린샷
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/68f2e61a-80e2-4643-9300-9b481e5ea879" width="600">
-</p>
+## 🚀 How to Use
 
-## 🚀 사용 방법
+Copy Repository
 ```sh
-# 1. 앱 설치
-npm install trip-splitter
-
-# 2. 실행
-npm start
+git clone https://github.com/dcho-jaewook/TripSplitter.git
+cd trip-splitter
+npm i
 ```
 
-## 🤝 기여 방법
-1. 이 저장소를 Fork하세요
-2. 새 브랜치를 생성하세요 (`git checkout -b feature-branch`)
-3. 변경 사항을 Commit하세요 (`git commit -m "Add new feature"`)
-4. Pull Request를 보내주세요
+Run the code
+```sh
+npx expo start
+```
 
+Or if the code above doesn't work...
+```sh
+expo start --tunnel 
+```
+
+## 🤝 How to Contribute
+1. Fork this repository
+2. Create a new branch (`git checkout -b feature-branch`)
+3. Update your code (`git add .`)
+4. Commit your changes (`git commit -m "Add new feature"`)
+5. Send a Pull Request
+
+## 💡 Further Idea
+1. _Receipt Scanning Feature_ - Don't need to add items manually, let the camera scan the receipt.
+2. _Auto Transaction_ - Connect with banking apps (BoA, Kakao Bank, etc.) to manage transaction within the app
 ---
 
 📜 MIT License | ⓒ 2025 TripSplitter
