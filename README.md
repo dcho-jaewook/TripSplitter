@@ -1,7 +1,3 @@
-# Experimental Repository
-It is a experimental file which 80nalnal2 team will try
-
-
 # 💰 TripSplitter - 더 쉬운 비용 정산
 
 > 함께한 순간, 편리한 정산. TripSplitter로 지출을 스마트하게 관리하세요.  
