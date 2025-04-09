@@ -251,16 +251,11 @@ export default function App() {
     }));
   };
 
-  // Add toggle function
-  const toggleTheme = () => {
-    setIsDarkMode(prev => !prev);
-  };
-
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.innerContainer}>
         <View style={styles.headerContainer}>
-          <Text style={[styles.title, { color: theme.primary }]}>Trip Splitter</Text>
+          <Text style={[styles.title, styles.headerContainerTitle, { color: theme.primary }]}>Trip Splitter</Text>
           <ThemeToggle isDarkMode={isDarkMode} toggleTheme={() => setIsDarkMode(!isDarkMode)} theme={theme} />
         </View>
         <Members toggleSection={toggleSection} theme={theme} expandedSections={expandedSections} addPerson={addPerson} handleDeletePerson={handleDeletePerson} canDeletePerson={canDeletePerson} people={people}/>
@@ -628,16 +623,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginTop: 20,
+    marginBottom: 10,
   },
-  themeToggle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  themeToggleText: {
-    fontSize: 20,
-  },
+  headerContainerTitle: {
+    marginTop: 20,
+    paddingLeft: 5,
+  }
 });
