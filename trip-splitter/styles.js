@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const getStyles = (theme) => StyleSheet.create({
+export const getStyles = StyleSheet.create({
     section: {
         marginBottom: 24,
         backgroundColor: '#2A2A2A',
@@ -12,12 +12,23 @@ export const getStyles = (theme) => StyleSheet.create({
         shadowRadius: 4,
         elevation: 3,
     },
+    expandButton: {
+      fontSize: 18,
+      color: '#FFDC00',
+      paddingHorizontal: 8,
+    },
     sectionTitle: { 
         fontSize: 20, 
         fontWeight: "600",
         marginBottom: 12,
         marginTop: 0,
         color: '#FFDC00'
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 8,
     },
     input: { 
         borderWidth: 1, 
@@ -44,5 +55,15 @@ export const getStyles = (theme) => StyleSheet.create({
         color: "#FFDC00", 
         fontSize: 16,
         opacity: 0.7 
+    },
+    addButton: {
+      backgroundColor: '#FFDC00',
+      padding: 12,
+      borderRadius: 8,
+      justifyContent: 'center',
+    },
+    addButtonText: {
+      color: '#1E1E1E',
+      fontWeight: 'bold',
     },
 });

@@ -4,6 +4,7 @@ import Checkbox from "expo-checkbox";
 import CameraApp from "./components/Camera.js";
 import { getStyles } from "./styles.js";
 import ThemeToggle from "./components/ThemeToggle.js";
+import Members from "./components/Members.js";
 
 const themes = {
   light: {
@@ -44,12 +45,12 @@ export default function App() {
   });
 
 
-  const uStyles = getStyles(theme);
+  const uStyles = getStyles;
 
-  const addPerson = () => {
-    if (!newPerson.trim() || people.includes(newPerson.trim())) return;
-    setPeople([...people, newPerson.trim()]);
-    setNewPerson("");
+  const addPerson = (newHuman) => {
+    if (!newHuman.trim() || people.includes(newHuman.trim())) return false;
+    setPeople([...people, newHuman.trim()]);
+    return true;
   };
 
   const getTotalPaidAmount = () => {
@@ -263,67 +264,14 @@ export default function App() {
           <Text style={[styles.title, { color: theme.primary }]}>Trip Splitter</Text>
           <ThemeToggle isDarkMode={isDarkMode} toggleTheme={() => setIsDarkMode(!isDarkMode)} theme={theme} />
         </View>
-        <View style={[uStyles.section, { backgroundColor: theme.surface }]}>
-          <TouchableOpacity 
-            style={styles.sectionHeader}
-            onPress={() => toggleSection('members')}
-          >
-            <Text style={[uStyles.sectionTitle, { color: theme.primary }]}>Members</Text>
-            <Text style={[styles.expandButton, { color: theme.primary }]}>
-              {expandedSections.members ? '▼' : '▶'}
-            </Text>
-          </TouchableOpacity>
-          
-          {expandedSections.members && (
-            <>
-              <View style={styles.addPersonContainer}>
-                <TextInput 
-                  placeholder="Enter name"
-                  value={newPerson}
-                  onChangeText={setNewPerson}
-                  style={[
-                    uStyles.input, 
-                    { 
-                      backgroundColor: theme.surface,
-                      borderColor: theme.border,
-                      color: theme.text 
-                    },
-                    styles.addPersonInput
-                  ]}
-                  placeholderTextColor={theme.textSecondary}
-                />
-                <TouchableOpacity 
-                  style={styles.addButton}
-                  onPress={addPerson}
-                >
-                  <Text style={styles.addButtonText}>Add</Text>
-                </TouchableOpacity>
-              </View>
-              
-              {people.map(person => (
-                <View key={person} style={styles.personItemContainer}>
-                  <Text style={[styles.personItem, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]}>{person}</Text>
-                  <TouchableOpacity 
-                    style={[
-                      styles.deleteButton,
-                      !canDeletePerson(person) && styles.deleteButtonDisabled
-                    ]}
-                    onPress={() => handleDeletePerson(person)}
-                  >
-                    <Text style={styles.deleteButtonText}>✕</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </>
-          )}
-        </View>
+        <Members toggleSection={toggleSection} theme={theme} expandedSections={expandedSections} addPerson={addPerson} handleDeletePerson={handleDeletePerson} canDeletePerson={canDeletePerson} people={people}/>
 
         {!showAddItemForm && (
           <TouchableOpacity 
             style={styles.addItemButton}
             onPress={() => setShowAddItemForm(true)}
           >
-            <Text style={[styles.addButtonText, { color: theme.primary }]}>Add Item</Text>
+            <Text style={[uStyles.addButtonText, { color: theme.primary }]}>Add Item</Text>
           </TouchableOpacity>
         )}
 
@@ -371,7 +319,7 @@ export default function App() {
                   style={styles.evenSplitButton}
                   onPress={handleEvenSplit}
                 >
-                  <Text style={[styles.evenSplitText, styles.addButtonText]}>Even Split</Text>
+                  <Text style={[styles.evenSplitText, uStyles.addButtonText]}>Even Split</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -418,11 +366,11 @@ export default function App() {
           ) : (
             <>
               <TouchableOpacity 
-                style={styles.sectionHeader}
+                style={uStyles.sectionHeader}
                 onPress={() => toggleSection('allExpenses')}
               >
                 <Text style={[styles.expenseSubtitle, { color: theme.primary }]}>All Expenses</Text>
-                <Text style={styles.expandButton}>
+                <Text style={[uStyles.expandButton, { color: theme.primary }]}>
                   {expandedSections.allExpenses ? '▼' : '▶'}
                 </Text>
               </TouchableOpacity>
@@ -444,11 +392,11 @@ export default function App() {
               )}
 
               <TouchableOpacity 
-                style={[styles.sectionHeader, styles.secondaryHeader]}
+                style={[uStyles.sectionHeader, styles.secondaryHeader]}
                 onPress={() => toggleSection('expensesByPerson')}
               >
                 <Text style={[styles.expenseSubtitle, { color: theme.primary }]}>Expenses by Person</Text>
-                <Text style={styles.expandButton}>
+                <Text style={[uStyles.expandButton, { color: theme.primary }]}>
                   {expandedSections.expensesByPerson ? '▼' : '▶'}
                 </Text>
               </TouchableOpacity>
@@ -457,7 +405,7 @@ export default function App() {
                 people.map(person => {
                   const personExpenses = getPersonExpenses(person);
                   return (
-                    <View key={person} style={[styles.personExpenseContainer, { backgroundColor: theme.surface }]}>
+                    <View key={person} style={[styles.personExpenseContainer, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                       <Text style={[styles.personExpenseTitle, { color: theme.primary }]}>{person}</Text>
                       
                       <Text style={[styles.expenseSubheader, { color: theme.textSecondary }]}>Paid for:</Text>
@@ -580,16 +528,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginBottom: 0,
     marginRight: 8,
-  },
-  addButton: {
-    backgroundColor: '#FFDC00',
-    padding: 12,
-    borderRadius: 8,
-    justifyContent: 'center',
-  },
-  addButtonText: {
-    color: '#1E1E1E',
-    fontWeight: 'bold',
   },
   personItemContainer: {
     flexDirection: 'row',
@@ -721,17 +659,6 @@ const styles = StyleSheet.create({
   negativeAmount: {
     color: '#FF3F34',
     opacity: 0.7,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  expandButton: {
-    fontSize: 18,
-    color: '#FFDC00',
-    paddingHorizontal: 8,
   },
   secondaryHeader: {
     marginTop: 16,
