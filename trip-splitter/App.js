@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
-import Checkbox from "expo-checkbox";
 import CameraApp from "./components/Camera.js";
 import { getStyles } from "./styles.js";
 import ThemeToggle from "./components/ThemeToggle.js";
 import Members from "./components/Members.js";
 import AddItemButton from "./components/AddItemButton.js";
+import Expenses from "./components/Expenses.js";
 
 const themes = {
   light: {
@@ -261,15 +261,9 @@ export default function App() {
         </View>
         <Members toggleSection={toggleSection} theme={theme} expandedSections={expandedSections} addPerson={addPerson} handleDeletePerson={handleDeletePerson} canDeletePerson={canDeletePerson} people={people}/>
 
-        {!showAddItemForm && <AddItemButton theme={theme} setShowAddItemForm={setShowAddItemForm}/>
-          // <TouchableOpacity 
-          //   style={styles.addItemButton}
-          //   onPress={() => setShowAddItemForm(true)}
-          // >
-          //   <Text style={[uStyles.addButtonText, { color: theme.primary }]}>Add Item</Text>
-          // </TouchableOpacity>
-        }
+        {!showAddItemForm && <AddItemButton theme={theme} setShowAddItemForm={setShowAddItemForm}/>}
 
+        {/* Should be in a separate component after the styling is done */}
         {showAddItemForm && (
           <View style={[uStyles.section, { backgroundColor: theme.surface }]}>
             <View style={styles.formHeader}>
@@ -354,83 +348,10 @@ export default function App() {
             <Button title="Add Item" onPress={addExpense} />
           </View>
         )}
+
         <Text style={[uStyles.sectionTitle, { color: theme.primary }]}>Expenses</Text>
-        <View style={[uStyles.section, { backgroundColor: theme.surface }]}>
-          {expenses.length === 0 ? (
-            <Text style={[uStyles.emptyText, { color: theme.textSecondary }]}>No expenses yet.</Text>
-          ) : (
-            <>
-              <TouchableOpacity 
-                style={uStyles.sectionHeader}
-                onPress={() => toggleSection('allExpenses')}
-              >
-                <Text style={[styles.expenseSubtitle, { color: theme.primary }]}>All Expenses</Text>
-                <Text style={[uStyles.expandButton, { color: theme.primary }]}>
-                  {expandedSections.allExpenses ? '▼' : '▶'}
-                </Text>
-              </TouchableOpacity>
-              
-              {expandedSections.allExpenses && (
-                expenses.map((exp) => (
-                  <Text key={exp.id} style={[styles.expenseItem, { color: theme.text }]}>
-                    <Text style={{fontWeight: "bold", color: theme.text}}>{exp.description}</Text>: {exp.amount} yen{"\n"}
-                    {"\n"}Paid by:{" "}
-                    {Object.entries(exp.paidBy).map(([person, amount], i, arr) => 
-                      `${person} (${amount})${i < arr.length - 1 ? ', ' : ''}`
-                    )}{"\n"}
-                    {"\n"}Split shares:{" "}
-                    {Object.entries(exp.splitShares).map(([person, share], i, arr) => 
-                      `${person} (${share})${i < arr.length - 1 ? ', ' : ''}`
-                    )}
-                  </Text>
-                ))
-              )}
-
-              <TouchableOpacity 
-                style={[uStyles.sectionHeader, styles.secondaryHeader]}
-                onPress={() => toggleSection('expensesByPerson')}
-              >
-                <Text style={[styles.expenseSubtitle, { color: theme.primary }]}>Expenses by Person</Text>
-                <Text style={[uStyles.expandButton, { color: theme.primary }]}>
-                  {expandedSections.expensesByPerson ? '▼' : '▶'}
-                </Text>
-              </TouchableOpacity>
-              
-              {expandedSections.expensesByPerson && (
-                people.map(person => {
-                  const personExpenses = getPersonExpenses(person);
-                  return (
-                    <View key={person} style={[styles.personExpenseContainer, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                      <Text style={[styles.personExpenseTitle, { color: theme.primary }]}>{person}</Text>
-                      
-                      <Text style={[styles.expenseSubheader, { color: theme.textSecondary }]}>Paid for:</Text>
-                      {personExpenses.paid.length === 0 ? (
-                        <Text style={[uStyles.emptyText, { color: theme.textSecondary }]}>No payments made</Text>
-                      ) : (
-                        personExpenses.paid.map(exp => (
-                          <Text key={exp.id} style={[styles.personExpenseItem, { color: theme.text }]}>
-                            • {exp.description}: {exp.amountPaid} yen
-                          </Text>
-                        ))
-                      )}
-
-                      <Text style={[styles.expenseSubheader, { color: theme.textSecondary }]}>Consumed in:</Text>
-                      {personExpenses.consumed.length === 0 ? (
-                        <Text style={[uStyles.emptyText, { color: theme.textSecondary }]}>No items consumed</Text>
-                      ) : (
-                        personExpenses.consumed.map(exp => (
-                          <Text key={exp.id} style={[styles.personExpenseItem, { color: theme.text }]}>
-                            • {exp.description}: {exp.amountConsumed} yen
-                          </Text>
-                        ))
-                      )}
-                    </View>
-                  );
-                })
-              )}
-            </>
-          )}
-        </View>
+        <Expenses expenses={expenses} theme={theme} toggleSection={toggleSection} expandedSections={expandedSections} getPersonExpenses={getPersonExpenses} people={people}/>
+        
         <Text style={[uStyles.sectionTitle, { color: theme.primary }]}>Settlement</Text>
         <View style={[uStyles.section, { backgroundColor: theme.surface }]}>
           {showSettlement ? (
