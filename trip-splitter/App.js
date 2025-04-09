@@ -6,6 +6,7 @@ import ThemeToggle from "./components/ThemeToggle.js";
 import Members from "./components/Members.js";
 import AddItemButton from "./components/AddItemButton.js";
 import Expenses from "./components/Expenses.js";
+import Settlement from "./components/Settlement.js";
 
 const themes = {
   light: {
@@ -353,35 +354,7 @@ export default function App() {
         <Expenses expenses={expenses} theme={theme} toggleSection={toggleSection} expandedSections={expandedSections} getPersonExpenses={getPersonExpenses} people={people}/>
         
         <Text style={[uStyles.sectionTitle, { color: theme.primary }]}>Settlement</Text>
-        <View style={[uStyles.section, { backgroundColor: theme.surface }]}>
-          {showSettlement ? (
-            <>
-              {settlement
-                .filter(person => Math.abs(person.net) > 0.01)
-                .map((person) => (
-                  <Text key={person.name} style={[styles.settlementItem, { color: theme.text }]}>
-                    <Text style={[styles.personName, { color: theme.text }]}>{person.name}</Text>: {" "}
-                    <Text style={person.net >= 0 ? styles.positiveAmount : styles.negativeAmount}>
-                      {person.net >= 0 ? "is owed" : "owes"} {Math.abs(person.net.toFixed(2))} yen
-                    </Text>
-                  </Text>
-                ))}
-              {settlement.every(person => Math.abs(person.net) <= 0.01) && (
-                <Text style={[uStyles.emptyText, { color: theme.textSecondary }]}>All balances are settled!</Text>
-              )}
-              {expenses.length > 0 && (
-                <TouchableOpacity 
-                  style={[styles.settleButton, { backgroundColor: theme.primary }]}
-                  onPress={handleSettle}
-                >
-                  <Text style={[styles.settleButtonText, { color: theme.background }]}>Settle All Expenses</Text>
-                </TouchableOpacity>
-              )}
-            </>
-          ) : (
-            <Text style={[styles.settledMessage, { color: theme.text }]}>All expenses have been settled! 🎉</Text>
-          )}
-        </View>
+        <Settlement showSettlement={showSettlement} settlement={settlement} expenses={expenses} handleSettle={handleSettle} theme={theme}/>
         <CameraApp/>
       </View>
     </ScrollView>
@@ -422,7 +395,6 @@ const styles = StyleSheet.create({
   radioText: { fontSize: 16 },
   checkboxOption: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   checkboxText: { marginLeft: 8, fontSize: 16 },
-  settlementItem: { fontSize: 16, marginBottom: 8 },
   paidByContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -443,25 +415,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#2A2A2A',
     color: '#FFFFFF'
   },
-  settleButton: {
-    backgroundColor: '#FFDC00',
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  settleButtonText: {
-    color: '#1E1E1E',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  settledMessage: {
-    color: '#10b981',
-    fontSize: 16,
-    textAlign: 'center',
-    fontWeight: '500',
-    padding: 12,
-  },
   splitHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -479,16 +432,6 @@ const styles = StyleSheet.create({
     color: '#1E1E1E',
     fontSize: 14,
     fontWeight: '500',
-  },
-  personName: {
-    fontWeight: '600',
-  },
-  positiveAmount: {
-    color: '#11A31D',
-  },
-  negativeAmount: {
-    color: '#FF3F34',
-    opacity: 0.7,
   },
   headerContainer: {
     flexDirection: 'row',
