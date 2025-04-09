@@ -5,6 +5,7 @@ import CameraApp from "./components/Camera.js";
 import { getStyles } from "./styles.js";
 import ThemeToggle from "./components/ThemeToggle.js";
 import Members from "./components/Members.js";
+import AddItemButton from "./components/AddItemButton.js";
 
 const themes = {
   light: {
@@ -260,14 +261,14 @@ export default function App() {
         </View>
         <Members toggleSection={toggleSection} theme={theme} expandedSections={expandedSections} addPerson={addPerson} handleDeletePerson={handleDeletePerson} canDeletePerson={canDeletePerson} people={people}/>
 
-        {!showAddItemForm && (
-          <TouchableOpacity 
-            style={styles.addItemButton}
-            onPress={() => setShowAddItemForm(true)}
-          >
-            <Text style={[uStyles.addButtonText, { color: theme.primary }]}>Add Item</Text>
-          </TouchableOpacity>
-        )}
+        {!showAddItemForm && <AddItemButton theme={theme} setShowAddItemForm={setShowAddItemForm}/>
+          // <TouchableOpacity 
+          //   style={styles.addItemButton}
+          //   onPress={() => setShowAddItemForm(true)}
+          // >
+          //   <Text style={[uStyles.addButtonText, { color: theme.primary }]}>Add Item</Text>
+          // </TouchableOpacity>
+        }
 
         {showAddItemForm && (
           <View style={[uStyles.section, { backgroundColor: theme.surface }]}>
@@ -485,13 +486,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 16,
-  },
-  addItemButton: {
-    backgroundColor: theme => theme.primary,
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 24,
   },
   cancelButton: {
     padding: 8,
