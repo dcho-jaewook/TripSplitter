@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import Checkbox from "expo-checkbox";
 import CameraApp from "./components/Camera.js";
+import { getStyles } from "./styles.js";
 
 const themes = {
   light: {
@@ -40,6 +41,9 @@ export default function App() {
     allExpenses: true,
     expensesByPerson: true
   });
+
+
+  const uStyles = getStyles(theme);
 
   const addPerson = () => {
     if (!newPerson.trim() || people.includes(newPerson.trim())) return;
@@ -265,12 +269,12 @@ export default function App() {
             </Text>
           </TouchableOpacity>
         </View>
-        <View style={[styles.section, { backgroundColor: theme.surface }]}>
+        <View style={[uStyles.section, { backgroundColor: theme.surface }]}>
           <TouchableOpacity 
             style={styles.sectionHeader}
             onPress={() => toggleSection('members')}
           >
-            <Text style={[styles.sectionTitle, { color: theme.primary }]}>Members</Text>
+            <Text style={[uStyles.sectionTitle, { color: theme.primary }]}>Members</Text>
             <Text style={[styles.expandButton, { color: theme.primary }]}>
               {expandedSections.members ? '▼' : '▶'}
             </Text>
@@ -284,7 +288,7 @@ export default function App() {
                   value={newPerson}
                   onChangeText={setNewPerson}
                   style={[
-                    styles.input, 
+                    uStyles.input, 
                     { 
                       backgroundColor: theme.surface,
                       borderColor: theme.border,
@@ -330,9 +334,9 @@ export default function App() {
         )}
 
         {showAddItemForm && (
-          <View style={[styles.section, { backgroundColor: theme.surface }]}>
+          <View style={[uStyles.section, { backgroundColor: theme.surface }]}>
             <View style={styles.formHeader}>
-              <Text style={[styles.sectionTitle, { color: theme.primary }]}>Add Item</Text>
+              <Text style={[uStyles.sectionTitle, { color: theme.primary }]}>Add Item</Text>
               <TouchableOpacity 
                 style={styles.cancelButton}
                 onPress={resetItemForm}
@@ -341,10 +345,10 @@ export default function App() {
               </TouchableOpacity>
             </View>
 
-            <TextInput placeholder="Description (e.g., Sushi)" placeholderTextColor={theme.textSecondary} value={description} onChangeText={setDescription} style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]} />
-            <TextInput placeholder="Total Amount (e.g., 3000)" placeholderTextColor={theme.textSecondary} value={amount} onChangeText={setAmount} keyboardType="numeric" style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]} />
-            <Text style={[styles.label, { color: theme.primary }]}>Paid by:</Text>
-            <Text style={[styles.sublabel, { color: theme.textSecondary }]}>Enter amount paid by each person (total: {getTotalPaidAmount()})</Text>
+            <TextInput placeholder="Description (e.g., Sushi)" placeholderTextColor={theme.textSecondary} value={description} onChangeText={setDescription} style={[uStyles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]} />
+            <TextInput placeholder="Total Amount (e.g., 3000)" placeholderTextColor={theme.textSecondary} value={amount} onChangeText={setAmount} keyboardType="numeric" style={[uStyles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]} />
+            <Text style={[uStyles.label, { color: theme.primary }]}>Paid by:</Text>
+            <Text style={[uStyles.sublabel, { color: theme.textSecondary }]}>Enter amount paid by each person (total: {getTotalPaidAmount()})</Text>
             {people.map((person) => (
               <View key={person} style={styles.paidByContainer}>
                 <Text style={[styles.paidByText, { color: theme.text }]}>{person}</Text>
@@ -366,7 +370,7 @@ export default function App() {
               </View>
             ))}
             <View style={styles.splitHeader}>
-              <Text style={[styles.label, { color: theme.primary }]}>Split shares:</Text>
+              <Text style={[uStyles.label, { color: theme.primary }]}>Split shares:</Text>
               <View style={styles.splitButtonContainer}>
                 <Button title="Reset" onPress={() => setSplitShares({})} />
                 <TouchableOpacity 
@@ -378,7 +382,7 @@ export default function App() {
               </View>
             </View>
 
-            <Text style={[styles.sublabel, { color: theme.textSecondary }]}>
+            <Text style={[uStyles.sublabel, { color: theme.textSecondary }]}>
               Enter how much each person consumed (total: {
                 Object.values(splitShares).reduce((sum, share) => sum + (parseFloat(share) || 0), 0)
               })
@@ -386,7 +390,7 @@ export default function App() {
 
             {/* Paid by Section */}
             <View style={styles.paidByHeader}>
-              <Text style={[styles.label, { color: theme.primary }]}>Paid by:</Text>
+              <Text style={[uStyles.label, { color: theme.primary }]}>Paid by:</Text>
               <Button title="Reset" onPress={() => setPaidBy({})} />
             </View>
 
@@ -413,10 +417,10 @@ export default function App() {
             <Button title="Add Item" onPress={addExpense} />
           </View>
         )}
-        <Text style={[styles.sectionTitle, { color: theme.primary }]}>Expenses</Text>
-        <View style={[styles.section, { backgroundColor: theme.surface }]}>
+        <Text style={[uStyles.sectionTitle, { color: theme.primary }]}>Expenses</Text>
+        <View style={[uStyles.section, { backgroundColor: theme.surface }]}>
           {expenses.length === 0 ? (
-            <Text style={[styles.emptyText, { color: theme.textSecondary }]}>No expenses yet.</Text>
+            <Text style={[uStyles.emptyText, { color: theme.textSecondary }]}>No expenses yet.</Text>
           ) : (
             <>
               <TouchableOpacity 
@@ -464,7 +468,7 @@ export default function App() {
                       
                       <Text style={[styles.expenseSubheader, { color: theme.textSecondary }]}>Paid for:</Text>
                       {personExpenses.paid.length === 0 ? (
-                        <Text style={[styles.emptyText, { color: theme.textSecondary }]}>No payments made</Text>
+                        <Text style={[uStyles.emptyText, { color: theme.textSecondary }]}>No payments made</Text>
                       ) : (
                         personExpenses.paid.map(exp => (
                           <Text key={exp.id} style={[styles.personExpenseItem, { color: theme.text }]}>
@@ -475,7 +479,7 @@ export default function App() {
 
                       <Text style={[styles.expenseSubheader, { color: theme.textSecondary }]}>Consumed in:</Text>
                       {personExpenses.consumed.length === 0 ? (
-                        <Text style={[styles.emptyText, { color: theme.textSecondary }]}>No items consumed</Text>
+                        <Text style={[uStyles.emptyText, { color: theme.textSecondary }]}>No items consumed</Text>
                       ) : (
                         personExpenses.consumed.map(exp => (
                           <Text key={exp.id} style={[styles.personExpenseItem, { color: theme.text }]}>
@@ -490,8 +494,8 @@ export default function App() {
             </>
           )}
         </View>
-        <Text style={[styles.sectionTitle, { color: theme.primary }]}>Settlement</Text>
-        <View style={[styles.section, { backgroundColor: theme.surface }]}>
+        <Text style={[uStyles.sectionTitle, { color: theme.primary }]}>Settlement</Text>
+        <View style={[uStyles.section, { backgroundColor: theme.surface }]}>
           {showSettlement ? (
             <>
               {settlement
@@ -505,7 +509,7 @@ export default function App() {
                   </Text>
                 ))}
               {settlement.every(person => Math.abs(person.net) <= 0.01) && (
-                <Text style={[styles.emptyText, { color: theme.textSecondary }]}>All balances are settled!</Text>
+                <Text style={[uStyles.emptyText, { color: theme.textSecondary }]}>All balances are settled!</Text>
               )}
               {expenses.length > 0 && (
                 <TouchableOpacity 
@@ -540,17 +544,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold", 
     marginBottom: 20,
   },
-  section: {
-    marginBottom: 24,
-    backgroundColor: '#2A2A2A',
-    padding: 16,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
   formHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -572,45 +565,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  input: { 
-    borderWidth: 1, 
-    borderColor: "#FFDC00", 
-    padding: 12, 
-    marginBottom: 12, 
-    borderRadius: 8,
-    backgroundColor: '#2A2A2A',
-    color: '#FFFFFF' 
-  },
-  label: { 
-    fontSize: 16, 
-    marginBottom: 8, 
-    marginTop: 12,
-    color: '#FFDC00' 
-  },
-  sublabel: {
-    fontSize: 14,
-    color: '#FFDC00',
-    marginBottom: 8,
-    opacity: 0.8,
-  },
   radioOption: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   radioCircle: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: "#374151", marginRight: 8 },
   radioSelected: { backgroundColor: "#3b82f6" },
   radioText: { fontSize: 16 },
   checkboxOption: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   checkboxText: { marginLeft: 8, fontSize: 16 },
-  sectionTitle: { 
-    fontSize: 20, 
-    fontWeight: "600",
-    marginBottom: 12,
-    marginTop: 0,
-    color: '#FFDC00'
-  },
-  emptyText: { 
-    color: "#FFDC00", 
-    fontSize: 16,
-    opacity: 0.7 
-  },
+  
   expenseItem: { 
     fontSize: 16, 
     marginBottom: 8,
