@@ -29,7 +29,6 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const theme = isDarkMode ? themes.dark : themes.light;
   const [people, setPeople] = useState([]);
-  const [newPerson, setNewPerson] = useState("");
   const [expenses, setExpenses] = useState([]);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
@@ -520,44 +519,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF' 
   },
   settlementItem: { fontSize: 16, marginBottom: 8 },
-  addPersonContainer: {
-    flexDirection: 'row',
-    marginBottom: 16,
-  },
-  addPersonInput: {
-    flex: 1,
-    marginBottom: 0,
-    marginRight: 8,
-  },
-  personItemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  personItem: {
-    flex: 1,
-    fontSize: 16,
-    padding: 8,
-    borderRadius: 4,
-    marginRight: 8,
-    borderWidth: 1,
-  },
-  deleteButton: {
-    backgroundColor: '#ef4444',
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  deleteButtonDisabled: {
-    backgroundColor: '#9ca3af',
-  },
-  deleteButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   paidByContainer: {
     flexDirection: 'row',
     alignItems: 'center',
