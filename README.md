@@ -41,6 +41,3 @@ expo start --tunnel
 ## 💡 Further Idea
 1. _Receipt Scanning Feature_ - Don't need to add items manually, let the camera scan the receipt.
 2. _Auto Transaction_ - Connect with banking apps (BoA, Kakao Bank, etc.) to manage transaction within the app
----
-
-📜 MIT License | ⓒ 2025 TripSplitter
