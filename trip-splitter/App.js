@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity
 import Checkbox from "expo-checkbox";
 import CameraApp from "./components/Camera.js";
 import { getStyles } from "./styles.js";
+import ThemeToggle from "./components/ThemeToggle.js";
 
 const themes = {
   light: {
@@ -260,14 +261,7 @@ export default function App() {
       <View style={styles.innerContainer}>
         <View style={styles.headerContainer}>
           <Text style={[styles.title, { color: theme.primary }]}>Trip Splitter</Text>
-          <TouchableOpacity 
-            style={[styles.themeToggle, { backgroundColor: theme.primary }]}
-            onPress={toggleTheme}
-          >
-            <Text style={[styles.themeToggleText, { color: theme.background }]}>
-              {isDarkMode ? '☀️' : '🌙'}
-            </Text>
-          </TouchableOpacity>
+          <ThemeToggle isDarkMode={isDarkMode} toggleTheme={() => setIsDarkMode(!isDarkMode)} theme={theme} />
         </View>
         <View style={[uStyles.section, { backgroundColor: theme.surface }]}>
           <TouchableOpacity 
