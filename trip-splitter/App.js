@@ -422,12 +422,6 @@ const styles = StyleSheet.create({
   radioText: { fontSize: 16 },
   checkboxOption: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   checkboxText: { marginLeft: 8, fontSize: 16 },
-  
-  expenseItem: { 
-    fontSize: 16, 
-    marginBottom: 8,
-    color: '#FFFFFF' 
-  },
   settlementItem: { fontSize: 16, marginBottom: 8 },
   paidByContainer: {
     flexDirection: 'row',
@@ -486,41 +480,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-  expenseSubtitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginTop: 16,
-    marginBottom: 8,
-    color: '#FFDC00',
-  },
-  expenseSubheader: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginTop: 8,
-    marginBottom: 4,
-    color: '#4b5563',
-  },
-  personExpenseContainer: {
-    marginTop: 12,
-    padding: 12,
-    backgroundColor: '#2A2A2A',
-    borderRadius: 8,
-    marginBottom: 8,
-    borderColor: '#FFDC00',
-    borderWidth: 1,
-  },
-  personExpenseTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#FFDC00',
-  },
-  personExpenseItem: {
-    fontSize: 14,
-    marginLeft: 8,
-    marginBottom: 4,
-    color: '#FFFFFF',
-  },
   personName: {
     fontWeight: '600',
   },
@@ -530,9 +489,6 @@ const styles = StyleSheet.create({
   negativeAmount: {
     color: '#FF3F34',
     opacity: 0.7,
-  },
-  secondaryHeader: {
-    marginTop: 16,
   },
   headerContainer: {
     flexDirection: 'row',
