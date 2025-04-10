@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
-import Checkbox from "expo-checkbox";
 import CameraApp from "./components/Camera.js";
+import { getStyles } from "./styles.js";
+import ThemeToggle from "./components/ThemeToggle.js";
+import Members from "./components/Members.js";
+import AddItemButton from "./components/AddItemButton.js";
+import Expenses from "./components/Expenses.js";
+import Settlement from "./components/Settlement.js";
 
 const themes = {
   light: {
@@ -26,7 +31,6 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const theme = isDarkMode ? themes.dark : themes.light;
   const [people, setPeople] = useState([]);
-  const [newPerson, setNewPerson] = useState("");
   const [expenses, setExpenses] = useState([]);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
@@ -41,10 +45,13 @@ export default function App() {
     expensesByPerson: true
   });
 
-  const addPerson = () => {
-    if (!newPerson.trim() || people.includes(newPerson.trim())) return;
-    setPeople([...people, newPerson.trim()]);
-    setNewPerson("");
+
+  const uStyles = getStyles;
+
+  const addPerson = (newHuman) => {
+    if (!newHuman.trim() || people.includes(newHuman.trim())) return false;
+    setPeople([...people, newHuman.trim()]);
+    return true;
   };
 
   const getTotalPaidAmount = () => {
@@ -246,93 +253,22 @@ export default function App() {
     }));
   };
 
-  // Add toggle function
-  const toggleTheme = () => {
-    setIsDarkMode(prev => !prev);
-  };
-
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.innerContainer}>
         <View style={styles.headerContainer}>
-          <Text style={[styles.title, { color: theme.primary }]}>Trip Splitter</Text>
-          <TouchableOpacity 
-            style={[styles.themeToggle, { backgroundColor: theme.primary }]}
-            onPress={toggleTheme}
-          >
-            <Text style={[styles.themeToggleText, { color: theme.background }]}>
-              {isDarkMode ? '☀️' : '🌙'}
-            </Text>
-          </TouchableOpacity>
+          <Text style={[styles.title, styles.headerContainerTitle, { color: theme.primary }]}>Trip Splitter</Text>
+          <ThemeToggle isDarkMode={isDarkMode} toggleTheme={() => setIsDarkMode(!isDarkMode)} theme={theme} />
         </View>
-        <View style={[styles.section, { backgroundColor: theme.surface }]}>
-          <TouchableOpacity 
-            style={styles.sectionHeader}
-            onPress={() => toggleSection('members')}
-          >
-            <Text style={[styles.sectionTitle, { color: theme.primary }]}>Members</Text>
-            <Text style={[styles.expandButton, { color: theme.primary }]}>
-              {expandedSections.members ? '▼' : '▶'}
-            </Text>
-          </TouchableOpacity>
-          
-          {expandedSections.members && (
-            <>
-              <View style={styles.addPersonContainer}>
-                <TextInput 
-                  placeholder="Enter name"
-                  value={newPerson}
-                  onChangeText={setNewPerson}
-                  style={[
-                    styles.input, 
-                    { 
-                      backgroundColor: theme.surface,
-                      borderColor: theme.border,
-                      color: theme.text 
-                    },
-                    styles.addPersonInput
-                  ]}
-                  placeholderTextColor={theme.textSecondary}
-                />
-                <TouchableOpacity 
-                  style={styles.addButton}
-                  onPress={addPerson}
-                >
-                  <Text style={styles.addButtonText}>Add</Text>
-                </TouchableOpacity>
-              </View>
-              
-              {people.map(person => (
-                <View key={person} style={styles.personItemContainer}>
-                  <Text style={[styles.personItem, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]}>{person}</Text>
-                  <TouchableOpacity 
-                    style={[
-                      styles.deleteButton,
-                      !canDeletePerson(person) && styles.deleteButtonDisabled
-                    ]}
-                    onPress={() => handleDeletePerson(person)}
-                  >
-                    <Text style={styles.deleteButtonText}>✕</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </>
-          )}
-        </View>
+        <Members toggleSection={toggleSection} theme={theme} expandedSections={expandedSections} addPerson={addPerson} handleDeletePerson={handleDeletePerson} canDeletePerson={canDeletePerson} people={people}/>
 
-        {!showAddItemForm && (
-          <TouchableOpacity 
-            style={styles.addItemButton}
-            onPress={() => setShowAddItemForm(true)}
-          >
-            <Text style={[styles.addButtonText, { color: theme.primary }]}>Add Item</Text>
-          </TouchableOpacity>
-        )}
+        {!showAddItemForm && <AddItemButton theme={theme} setShowAddItemForm={setShowAddItemForm}/>}
 
+        {/* Should be in a separate component after the styling is done */}
         {showAddItemForm && (
-          <View style={[styles.section, { backgroundColor: theme.surface }]}>
+          <View style={[uStyles.section, { backgroundColor: theme.surface }]}>
             <View style={styles.formHeader}>
-              <Text style={[styles.sectionTitle, { color: theme.primary }]}>Add Item</Text>
+              <Text style={[uStyles.sectionTitle, { color: theme.primary }]}>Add Item</Text>
               <TouchableOpacity 
                 style={styles.cancelButton}
                 onPress={resetItemForm}
@@ -341,10 +277,10 @@ export default function App() {
               </TouchableOpacity>
             </View>
 
-            <TextInput placeholder="Description (e.g., Sushi)" placeholderTextColor={theme.textSecondary} value={description} onChangeText={setDescription} style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]} />
-            <TextInput placeholder="Total Amount (e.g., 3000)" placeholderTextColor={theme.textSecondary} value={amount} onChangeText={setAmount} keyboardType="numeric" style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]} />
-            <Text style={[styles.label, { color: theme.primary }]}>Paid by:</Text>
-            <Text style={[styles.sublabel, { color: theme.textSecondary }]}>Enter amount paid by each person (total: {getTotalPaidAmount()})</Text>
+            <TextInput placeholder="Description (e.g., Sushi)" placeholderTextColor={theme.textSecondary} value={description} onChangeText={setDescription} style={[uStyles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]} />
+            <TextInput placeholder="Total Amount (e.g., 3000)" placeholderTextColor={theme.textSecondary} value={amount} onChangeText={setAmount} keyboardType="numeric" style={[uStyles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]} />
+            <Text style={[uStyles.label, { color: theme.primary }]}>Paid by:</Text>
+            <Text style={[uStyles.sublabel, { color: theme.textSecondary }]}>Enter amount paid by each person (total: {getTotalPaidAmount()})</Text>
             {people.map((person) => (
               <View key={person} style={styles.paidByContainer}>
                 <Text style={[styles.paidByText, { color: theme.text }]}>{person}</Text>
@@ -366,19 +302,19 @@ export default function App() {
               </View>
             ))}
             <View style={styles.splitHeader}>
-              <Text style={[styles.label, { color: theme.primary }]}>Split shares:</Text>
+              <Text style={[uStyles.label, { color: theme.primary }]}>Split shares:</Text>
               <View style={styles.splitButtonContainer}>
                 <Button title="Reset" onPress={() => setSplitShares({})} />
                 <TouchableOpacity 
                   style={styles.evenSplitButton}
                   onPress={handleEvenSplit}
                 >
-                  <Text style={[styles.evenSplitText, styles.addButtonText]}>Even Split</Text>
+                  <Text style={[styles.evenSplitText, uStyles.addButtonText]}>Even Split</Text>
                 </TouchableOpacity>
               </View>
             </View>
 
-            <Text style={[styles.sublabel, { color: theme.textSecondary }]}>
+            <Text style={[uStyles.sublabel, { color: theme.textSecondary }]}>
               Enter how much each person consumed (total: {
                 Object.values(splitShares).reduce((sum, share) => sum + (parseFloat(share) || 0), 0)
               })
@@ -386,7 +322,7 @@ export default function App() {
 
             {/* Paid by Section */}
             <View style={styles.paidByHeader}>
-              <Text style={[styles.label, { color: theme.primary }]}>Paid by:</Text>
+              <Text style={[uStyles.label, { color: theme.primary }]}>Paid by:</Text>
               <Button title="Reset" onPress={() => setPaidBy({})} />
             </View>
 
@@ -413,113 +349,12 @@ export default function App() {
             <Button title="Add Item" onPress={addExpense} />
           </View>
         )}
-        <Text style={[styles.sectionTitle, { color: theme.primary }]}>Expenses</Text>
-        <View style={[styles.section, { backgroundColor: theme.surface }]}>
-          {expenses.length === 0 ? (
-            <Text style={[styles.emptyText, { color: theme.textSecondary }]}>No expenses yet.</Text>
-          ) : (
-            <>
-              <TouchableOpacity 
-                style={styles.sectionHeader}
-                onPress={() => toggleSection('allExpenses')}
-              >
-                <Text style={[styles.expenseSubtitle, { color: theme.primary }]}>All Expenses</Text>
-                <Text style={styles.expandButton}>
-                  {expandedSections.allExpenses ? '▼' : '▶'}
-                </Text>
-              </TouchableOpacity>
-              
-              {expandedSections.allExpenses && (
-                expenses.map((exp) => (
-                  <Text key={exp.id} style={[styles.expenseItem, { color: theme.text }]}>
-                    <Text style={{fontWeight: "bold", color: theme.text}}>{exp.description}</Text>: {exp.amount} yen{"\n"}
-                    {"\n"}Paid by:{" "}
-                    {Object.entries(exp.paidBy).map(([person, amount], i, arr) => 
-                      `${person} (${amount})${i < arr.length - 1 ? ', ' : ''}`
-                    )}{"\n"}
-                    {"\n"}Split shares:{" "}
-                    {Object.entries(exp.splitShares).map(([person, share], i, arr) => 
-                      `${person} (${share})${i < arr.length - 1 ? ', ' : ''}`
-                    )}
-                  </Text>
-                ))
-              )}
 
-              <TouchableOpacity 
-                style={[styles.sectionHeader, styles.secondaryHeader]}
-                onPress={() => toggleSection('expensesByPerson')}
-              >
-                <Text style={[styles.expenseSubtitle, { color: theme.primary }]}>Expenses by Person</Text>
-                <Text style={styles.expandButton}>
-                  {expandedSections.expensesByPerson ? '▼' : '▶'}
-                </Text>
-              </TouchableOpacity>
-              
-              {expandedSections.expensesByPerson && (
-                people.map(person => {
-                  const personExpenses = getPersonExpenses(person);
-                  return (
-                    <View key={person} style={[styles.personExpenseContainer, { backgroundColor: theme.surface }]}>
-                      <Text style={[styles.personExpenseTitle, { color: theme.primary }]}>{person}</Text>
-                      
-                      <Text style={[styles.expenseSubheader, { color: theme.textSecondary }]}>Paid for:</Text>
-                      {personExpenses.paid.length === 0 ? (
-                        <Text style={[styles.emptyText, { color: theme.textSecondary }]}>No payments made</Text>
-                      ) : (
-                        personExpenses.paid.map(exp => (
-                          <Text key={exp.id} style={[styles.personExpenseItem, { color: theme.text }]}>
-                            • {exp.description}: {exp.amountPaid} yen
-                          </Text>
-                        ))
-                      )}
-
-                      <Text style={[styles.expenseSubheader, { color: theme.textSecondary }]}>Consumed in:</Text>
-                      {personExpenses.consumed.length === 0 ? (
-                        <Text style={[styles.emptyText, { color: theme.textSecondary }]}>No items consumed</Text>
-                      ) : (
-                        personExpenses.consumed.map(exp => (
-                          <Text key={exp.id} style={[styles.personExpenseItem, { color: theme.text }]}>
-                            • {exp.description}: {exp.amountConsumed} yen
-                          </Text>
-                        ))
-                      )}
-                    </View>
-                  );
-                })
-              )}
-            </>
-          )}
-        </View>
-        <Text style={[styles.sectionTitle, { color: theme.primary }]}>Settlement</Text>
-        <View style={[styles.section, { backgroundColor: theme.surface }]}>
-          {showSettlement ? (
-            <>
-              {settlement
-                .filter(person => Math.abs(person.net) > 0.01)
-                .map((person) => (
-                  <Text key={person.name} style={[styles.settlementItem, { color: theme.text }]}>
-                    <Text style={[styles.personName, { color: theme.text }]}>{person.name}</Text>: {" "}
-                    <Text style={person.net >= 0 ? styles.positiveAmount : styles.negativeAmount}>
-                      {person.net >= 0 ? "is owed" : "owes"} {Math.abs(person.net.toFixed(2))} yen
-                    </Text>
-                  </Text>
-                ))}
-              {settlement.every(person => Math.abs(person.net) <= 0.01) && (
-                <Text style={[styles.emptyText, { color: theme.textSecondary }]}>All balances are settled!</Text>
-              )}
-              {expenses.length > 0 && (
-                <TouchableOpacity 
-                  style={[styles.settleButton, { backgroundColor: theme.primary }]}
-                  onPress={handleSettle}
-                >
-                  <Text style={[styles.settleButtonText, { color: theme.background }]}>Settle All Expenses</Text>
-                </TouchableOpacity>
-              )}
-            </>
-          ) : (
-            <Text style={[styles.settledMessage, { color: theme.text }]}>All expenses have been settled! 🎉</Text>
-          )}
-        </View>
+        <Text style={[uStyles.sectionTitle, { color: theme.primary }]}>Expenses</Text>
+        <Expenses expenses={expenses} theme={theme} toggleSection={toggleSection} expandedSections={expandedSections} getPersonExpenses={getPersonExpenses} people={people}/>
+        
+        <Text style={[uStyles.sectionTitle, { color: theme.primary }]}>Settlement</Text>
+        <Settlement showSettlement={showSettlement} settlement={settlement} expenses={expenses} handleSettle={handleSettle} theme={theme}/>
         <CameraApp/>
       </View>
     </ScrollView>
@@ -540,29 +375,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold", 
     marginBottom: 20,
   },
-  section: {
-    marginBottom: 24,
-    backgroundColor: '#2A2A2A',
-    padding: 16,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
   formHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 16,
-  },
-  addItemButton: {
-    backgroundColor: theme => theme.primary,
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 24,
   },
   cancelButton: {
     padding: 8,
@@ -572,99 +389,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  input: { 
-    borderWidth: 1, 
-    borderColor: "#FFDC00", 
-    padding: 12, 
-    marginBottom: 12, 
-    borderRadius: 8,
-    backgroundColor: '#2A2A2A',
-    color: '#FFFFFF' 
-  },
-  label: { 
-    fontSize: 16, 
-    marginBottom: 8, 
-    marginTop: 12,
-    color: '#FFDC00' 
-  },
-  sublabel: {
-    fontSize: 14,
-    color: '#FFDC00',
-    marginBottom: 8,
-    opacity: 0.8,
-  },
   radioOption: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   radioCircle: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: "#374151", marginRight: 8 },
   radioSelected: { backgroundColor: "#3b82f6" },
   radioText: { fontSize: 16 },
   checkboxOption: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   checkboxText: { marginLeft: 8, fontSize: 16 },
-  sectionTitle: { 
-    fontSize: 20, 
-    fontWeight: "600",
-    marginBottom: 12,
-    marginTop: 0,
-    color: '#FFDC00'
-  },
-  emptyText: { 
-    color: "#FFDC00", 
-    fontSize: 16,
-    opacity: 0.7 
-  },
-  expenseItem: { 
-    fontSize: 16, 
-    marginBottom: 8,
-    color: '#FFFFFF' 
-  },
-  settlementItem: { fontSize: 16, marginBottom: 8 },
-  addPersonContainer: {
-    flexDirection: 'row',
-    marginBottom: 16,
-  },
-  addPersonInput: {
-    flex: 1,
-    marginBottom: 0,
-    marginRight: 8,
-  },
-  addButton: {
-    backgroundColor: '#FFDC00',
-    padding: 12,
-    borderRadius: 8,
-    justifyContent: 'center',
-  },
-  addButtonText: {
-    color: '#1E1E1E',
-    fontWeight: 'bold',
-  },
-  personItemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  personItem: {
-    flex: 1,
-    fontSize: 16,
-    padding: 8,
-    borderRadius: 4,
-    marginRight: 8,
-    borderWidth: 1,
-  },
-  deleteButton: {
-    backgroundColor: '#ef4444',
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  deleteButtonDisabled: {
-    backgroundColor: '#9ca3af',
-  },
-  deleteButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   paidByContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -685,25 +415,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#2A2A2A',
     color: '#FFFFFF'
   },
-  settleButton: {
-    backgroundColor: '#FFDC00',
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  settleButtonText: {
-    color: '#1E1E1E',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  settledMessage: {
-    color: '#10b981',
-    fontSize: 16,
-    textAlign: 'center',
-    fontWeight: '500',
-    padding: 12,
-  },
   splitHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -722,79 +433,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-  expenseSubtitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginTop: 16,
-    marginBottom: 8,
-    color: '#FFDC00',
-  },
-  expenseSubheader: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginTop: 8,
-    marginBottom: 4,
-    color: '#4b5563',
-  },
-  personExpenseContainer: {
-    marginTop: 12,
-    padding: 12,
-    backgroundColor: '#2A2A2A',
-    borderRadius: 8,
-    marginBottom: 8,
-    borderColor: '#FFDC00',
-    borderWidth: 1,
-  },
-  personExpenseTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#FFDC00',
-  },
-  personExpenseItem: {
-    fontSize: 14,
-    marginLeft: 8,
-    marginBottom: 4,
-    color: '#FFFFFF',
-  },
-  personName: {
-    fontWeight: '600',
-  },
-  positiveAmount: {
-    color: '#11A31D',
-  },
-  negativeAmount: {
-    color: '#FF3F34',
-    opacity: 0.7,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  expandButton: {
-    fontSize: 18,
-    color: '#FFDC00',
-    paddingHorizontal: 8,
-  },
-  secondaryHeader: {
-    marginTop: 16,
-  },
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginTop: 20,
+    marginBottom: 10,
   },
-  themeToggle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  themeToggleText: {
-    fontSize: 20,
-  },
+  headerContainerTitle: {
+    marginTop: 20,
+    paddingLeft: 5,
+  }
 });
