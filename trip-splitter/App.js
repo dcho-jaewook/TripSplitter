@@ -279,8 +279,23 @@ export default function App() {
 
             <TextInput placeholder="Description (e.g., Sushi)" placeholderTextColor={theme.textSecondary} value={description} onChangeText={setDescription} style={[uStyles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]} />
             <TextInput placeholder="Total Amount (e.g., 3000)" placeholderTextColor={theme.textSecondary} value={amount} onChangeText={setAmount} keyboardType="numeric" style={[uStyles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]} />
+            
+            
+            {/*Paid by section*/}
             <Text style={[uStyles.label, { color: theme.primary }]}>Paid by:</Text>
-            <Text style={[uStyles.sublabel, { color: theme.textSecondary }]}>Enter amount paid by each person (total: {getTotalPaidAmount()})</Text>
+            <View style={{flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 4}}>
+              <TouchableOpacity
+                style={styles.resetButton}
+                onPress={() => setPaidBy({})}
+              >
+                <Button title="Reset" onPress={() => setPaidBy({})} />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={[uStyles.sublabel, { color: theme.textSecondary }]}>
+              Enter amount paid by each person (total: {getTotalPaidAmount()})
+            </Text>
+
             {people.map((person) => (
               <View key={person} style={styles.paidByContainer}>
                 <Text style={[styles.paidByText, { color: theme.text }]}>{person}</Text>
@@ -301,15 +316,31 @@ export default function App() {
                 />
               </View>
             ))}
-            <View style={styles.splitHeader}>
-              <Text style={[uStyles.label, { color: theme.primary }]}>Split shares:</Text>
-              <View style={styles.splitButtonContainer}>
-                <Button title="Reset" onPress={() => setSplitShares({})} />
+
+            {/*Split shares section*/}
+            <View style={{ marginBottom: 12 }}>
+
+              <Text style={[uStyles.label, { color: theme.primary, marginBottom: 4 }]}>
+                Split shares:
+              </Text>
+
+
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 4 }}>
                 <TouchableOpacity 
                   style={styles.evenSplitButton}
                   onPress={handleEvenSplit}
                 >
                   <Text style={[styles.evenSplitText, uStyles.addButtonText]}>Even Split</Text>
+                </TouchableOpacity>
+              </View>
+
+
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                <TouchableOpacity
+                  style={styles.resetButton}
+                  onPress={() => setSplitShares({})}
+                >
+                  <Button title="Reset" onPress={() => setSplitShares({})} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -319,12 +350,6 @@ export default function App() {
                 Object.values(splitShares).reduce((sum, share) => sum + (parseFloat(share) || 0), 0)
               })
             </Text>
-
-            {/* Paid by Section */}
-            <View style={styles.paidByHeader}>
-              <Text style={[uStyles.label, { color: theme.primary }]}>Paid by:</Text>
-              <Button title="Reset" onPress={() => setPaidBy({})} />
-            </View>
 
             {people.map((person) => (
               <View key={person} style={styles.paidByContainer}>

@@ -66,4 +66,17 @@ export const getStyles = StyleSheet.create({
       color: '#1E1E1E',
       fontWeight: 'bold',
     },
+    resetButton: {
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      backgroundColor: '#EF4444', // 예: 빨간색 (tailwind red-500)
+      borderRadius: 8,
+      alignSelf: 'flex-start',
+      marginVertical: 8,
+    },
+    resetButtonText: {
+      color: '#FFFFFF',
+      fontWeight: 'bold',
+      fontSize: 14,
+    },
 });
