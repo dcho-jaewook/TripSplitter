@@ -1,35 +1,3 @@
-// import React from "react";
-// import { TouchableOpacity, Text, StyleSheet } from "react-native";
-
-// const ThemeToggle = ({ isDarkMode, toggleTheme, theme }) => {
-//     return (
-//         <TouchableOpacity 
-//             style={[styles.themeToggle, { backgroundColor: theme.primary }]}
-//             onPress={toggleTheme}
-//         >
-//             <Text style={[styles.themeToggleText, { color: theme.background }]}>
-//                 {isDarkMode ? '☀️' : '🌙'}
-//             </Text>
-//         </TouchableOpacity>
-//     );
-// };
-
-// const styles = StyleSheet.create({
-//     themeToggle: {
-//         width: 40,
-//         height: 40,
-//         borderRadius: 20,
-//         justifyContent: 'center',
-//         alignItems: 'center',
-//         marginRight: 5,
-//     },
-//     themeToggleText: {
-//         fontSize: 20,
-//     },
-// });
-  
-// export default ThemeToggle;
-
 import React, { useState, useRef, useEffect } from "react";
 import { View, TouchableOpacity, Animated, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons"; // Import Ionicons from react-native-vector-icons

@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import CameraApp from "./components/Camera.js";
 import { getStyles } from "./styles.js";
@@ -7,6 +9,10 @@ import Members from "./components/Members.js";
 import AddItemButton from "./components/AddItemButton.js";
 import Expenses from "./components/Expenses.js";
 import Settlement from "./components/Settlement.js";
+import LoginScreen from "./components/LoginScreen.js";
+import RegisterScreen from "./components/RegisterScreen.js";
+
+const Stack = createNativeStackNavigator();
 
 const themes = {
   light: {
@@ -27,7 +33,7 @@ const themes = {
   }
 };
 
-export default function App() {
+function MainApp({ navigation }) {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const theme = isDarkMode ? themes.dark : themes.light;
   const [people, setPeople] = useState([]);
@@ -44,7 +50,6 @@ export default function App() {
     allExpenses: true,
     expensesByPerson: true
   });
-
 
   const uStyles = getStyles;
 
@@ -383,6 +388,30 @@ export default function App() {
         <CameraApp/>
       </View>
     </ScrollView>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen 
+          name="Login" 
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="Register" 
+          component={RegisterScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="Home" 
+          component={MainApp}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
